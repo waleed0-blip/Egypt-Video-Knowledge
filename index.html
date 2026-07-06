@@ -52,7 +52,7 @@
                     <p class="text-sm text-slate-400 mt-0.5">Half-Annual Content Production Performance</p>
                 </div>
                 <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <a href="https://docs.google.com/spreadsheets/d/1vRRZSK30fdxCammfi-XjIa5UxJW5XweljKNe7AO7Q-XNCsAWSw7YFkattWLGENDc6ol8ASUk2PKyHwB/edit" 
+                    <a href="https://docs.google.com/spreadsheets/d/1D8YHhNR8Cj50t_vmrKsztcE5y3BrEj4QQWBzONSk3cA/edit" 
                        target="_blank" 
                        class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -143,8 +143,8 @@
         // Set your master entry password below
         const ACCESS_PASSWORD = "Manager2026_Secure"; 
         
-        // Extracted Google Spreadsheet ID string from your source URL
-        const SHEET_ID = '1vRRZSK30fdxCammfi-XjIa5UxJW5XweljKNe7AO7Q-XNCsAWSw7YFkattWLGENDc6ol8ASUk2PKyHwB'; 
+        // Updated Google Spreadsheet ID string from your verified URL
+        const SHEET_ID = '1D8YHhNR8Cj50t_vmrKsztcE5y3BrEj4QQWBzONSk3cA'; 
         const FEED_ENDPOINT = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
         function checkPassword() {
@@ -187,18 +187,22 @@
 
                 records.forEach(record => {
                     // Map out cells safely with proper fallbacks
-                    const topicStr = record.c[0] ? record.c[0].v : 'Asset Pending Assignment';
+                    const topicStr = record.c[0] ? record.c[0].v : null;
                     const fbUrl = record.c[1] ? record.c[1].v : null;
                     const viewMetrics = record.c[2] ? parseInt(record.c[2].v) || 0 : 0;
                     const tvUrl = record.c[3] ? record.c[3].v : null;
                     const lifecycleStatus = record.c[4] ? record.c[4].v : 'Completed';
 
+                    // Skip rows that don't have a topic name assigned yet
+                    if(!topicStr) return;
+
                     aggregateViews += viewMetrics;
-                    if(fbUrl || topicStr !== 'Asset Pending Assignment') validAssetCounter++;
+                    validAssetCounter++;
 
                     // Visual logic variables
                     const viewDisplay = viewMetrics > 0 ? viewMetrics.toLocaleString() : '0';
-                    const statusTheme = lifecycleStatus.toLowerCase() === 'live' || lifecycleStatus.toLowerCase() === 'completed'
+                    const isLive = lifecycleStatus.toLowerCase() === 'live' || lifecycleStatus.toLowerCase() === 'completed';
+                    const statusTheme = isLive
                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
                         : 'bg-amber-500/10 text-amber-400 border-amber-500/20';
 
@@ -233,7 +237,7 @@
                 document.getElementById('data-rows').innerHTML = `
                     <tr>
                         <td colspan="5" class="text-center py-8 text-red-400 font-medium text-sm">
-                            ⚠️ Failed to parse structural data stream from real-time spreadsheet configuration. Confirm cloud system connectivity.
+                            ⚠️ Failed to parse structural data stream from real-time spreadsheet configuration. Confirm cloud system connectivity and Link Sharing settings.
                         </td>
                     </tr>`;
             }
